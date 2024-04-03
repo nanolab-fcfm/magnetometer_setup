@@ -1,15 +1,16 @@
-import os
-import sys
-from typing import Type
-
 from pymeasure.display.Qt import QtWidgets
 from pymeasure.experiment import Procedure
 from PyQt6.QtCore import QLocale
 from PyQt6.QtWidgets import QStyle
 
+import os
+import sys
+from typing import Type
+
 from lib.display import get_dark_palette, ExperimentWindow, remove_empty_data
 from lib import _config_file_used
 from scripts.Ht import Ht
+from scripts.console import main as console_main
 from scripts.setup_adapters import main as setup_adapters_main
 
 Experiments = {
@@ -17,13 +18,14 @@ Experiments = {
 }
 Scripts = {
     'Set up Adapters': setup_adapters_main,
+    'Console': console_main,
 }
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, apps: dict[str, Type[Procedure]], scripts: dict[str, callable]):
         super().__init__()
-        self.setWindowTitle('Laser Setup')
+        self.setWindowTitle('Magnetometer Setup')
         # Set the window icon to sp_computericon
         self.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_ComputerIcon))
         self.resize(640, 480)
