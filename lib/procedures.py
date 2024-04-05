@@ -55,10 +55,10 @@ class BaseHtProcedure(MagnetProcedure):
     :param force_curr: The current applied to the second channel in pA.
     :param force_comp: The compliance of the second channel in mV.
     """
-    sense_curr = FloatParameter('Sense current', units='A', default=0.1)
-    sense_comp = FloatParameter('Sense compliance', units='V', default=1.)
-    force_curr = FloatParameter('Force current', units='A', default=1e-12)
-    force_comp = FloatParameter('Force compliance', units='V', default=5e-2)
+    sense_curr = FloatParameter('Sense current', units='A', default=0.)
+    sense_comp = FloatParameter('Sense compliance', units='V', default=5e-2)
+    force_curr = FloatParameter('Force current', units='A', default=1e-4)
+    force_comp = FloatParameter('Force compliance', units='V', default=1.)
     
     # Additional Parameters, preferably don't change
     sampling_t = FloatParameter('Sampling time (excluding Keithley)', units='s', default=0., group_by='show_more')

@@ -24,23 +24,23 @@ class Ht(BaseHtProcedure):
                 log.error('Measurement aborted')
                 break
 
-            self.emit('progress', 100 * keithley_time / self.total_time)
+            self.emit('progress', 100 * keithley_time / self.total_time * 60)
 
             # Take the average of N_avg measurements
             for j in range(self.N_avg):
                 avg_array[j] = self.meter.voltage
 
             keithley_time = self.get_keithley_time()
-            self.emit('results', dict(zip(self.DATA_COLUMNS, [keithley_time, np.mean(avg_array), 0.])))
+            self.emit('results', dict(zip(self.DATA_COLUMNS, [keithley_time, np.mean(avg_array), self.magnet_d])))
             avg_array[:] = 0.
             time.sleep(self.sampling_t)
     
     def execute(self):
         log.info("Starting the measurement")
+        if self.sense_curr != 0.:
+            self.meter.ramp_to_current(self.sense_curr)
         
-        self.meter.ramp_to_current(self.sense_curr)
-        
-        self.measuring_loop(self.total_time)
+        self.measuring_loop(self.total_time * 60)
 
 
 if __name__ == "__main__":
