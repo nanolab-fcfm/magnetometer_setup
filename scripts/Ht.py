@@ -31,14 +31,14 @@ class Ht(BaseHtProcedure):
                 avg_array[j] = self.meter.voltage
 
             keithley_time = self.get_keithley_time()
-            self.emit('results', dict(zip(self.DATA_COLUMNS, [keithley_time, np.mean(avg_array), self.magnet_d])))
+            self.emit('results', dict(zip(self.DATA_COLUMNS, [keithley_time, self.meter.source_voltage, np.mean(avg_array)])))
             avg_array[:] = 0.
             time.sleep(self.sampling_t)
     
     def execute(self):
         log.info("Starting the measurement")
         if self.sense_curr != 0.:
-            self.meter.ramp_to_current(self.sense_curr)
+            self.meter.ramp_to_current(self.source_curr)
         
         self.measuring_loop(self.total_time * 60)
 

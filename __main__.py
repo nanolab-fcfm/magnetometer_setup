@@ -26,7 +26,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, apps: dict[str, Type[Procedure]], scripts: dict[str, callable]):
         super().__init__()
         self.setWindowTitle('Magnetometer Setup')
-        # Set the window icon to sp_computericon
         self.setWindowIcon(self.style().standardIcon(QStyle.StandardPixmap.SP_ComputerIcon))
         self.resize(640, 480)
         self.setCentralWidget(QtWidgets.QWidget())
@@ -79,7 +78,6 @@ class MainWindow(QtWidgets.QMainWindow):
         def func():
             self.scripts[name]()
             self.suggest_reload()
-            # self.error_dialog('Script has finished running')
         return func
     
     def edit_settings(self):
@@ -98,7 +96,6 @@ class MainWindow(QtWidgets.QMainWindow):
         error_dialog.setIcon(QMessageBox.Icon.Critical)
         error_dialog.exec()
         self.reload.click() 
-        
         
 
 if __name__ == '__main__':

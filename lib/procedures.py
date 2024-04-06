@@ -19,7 +19,7 @@ class BaseProcedure(Procedure):
     """
     # Procedure version. When modified, increment
     # <parameter name>.<parameter property>.<procedure startup/shutdown>
-    procedure_version = Parameter('Procedure version', default='1.0.0')
+    procedure_version = Parameter('Procedure version', default='1.1.0')
 
     # Chip Parameters
     show_more = BooleanParameter('Show more', default=False)
@@ -55,18 +55,18 @@ class BaseHtProcedure(MagnetProcedure):
     :param force_curr: The current applied to the second channel in pA.
     :param force_comp: The compliance of the second channel in mV.
     """
-    sense_curr = FloatParameter('Sense current', units='A', default=0.)
+    sense_curr = FloatParameter('Sense current', units='A', default=1e-12)
     sense_comp = FloatParameter('Sense compliance', units='V', default=5e-2)
-    force_curr = FloatParameter('Force current', units='A', default=1e-4)
-    force_comp = FloatParameter('Force compliance', units='V', default=1.)
+    source_curr = FloatParameter('Source current', units='A', default=1e-4)
+    source_comp = FloatParameter('Source compliance', units='V', default=1.)
     
     # Additional Parameters, preferably don't change
     sampling_t = FloatParameter('Sampling time (excluding Keithley)', units='s', default=0., group_by='show_more')
     N_avg = IntegerParameter('N_avg', default=2, group_by='show_more')
-    Vrange = FloatParameter('Vrange', units='V', default=100, group_by='show_more')   # Does NOTHING for now
+    Vrange = FloatParameter('Vrange', units='V', default=100, group_by='show_more')
     
-    INPUTS = MagnetProcedure.INPUTS + ['sense_curr', 'sense_comp', 'force_curr', 'force_comp', 'sampling_t', 'N_avg']
-    DATA_COLUMNS = ['t (s)', 'VDS (V)', 'V2 (V)']
+    INPUTS = MagnetProcedure.INPUTS + ['sense_curr', 'sense_comp', 'source_curr', 'source_comp', 'sampling_t', 'N_avg']
+    DATA_COLUMNS = ['t (s)', 'VDS (V)', 'VH (V)']
     
     def get_keithley_time(self):
         return float(self.meter.ask(':READ? "IVBuffer", REL')[:-1])
@@ -87,7 +87,7 @@ class BaseHtProcedure(MagnetProcedure):
         self.meter.write(':VOLT:RSENse ON')  # Enable 4-wire sense for voltage measurements
         self.meter.measure_voltage(voltage=self.Vrange)
         
-        self.meter.apply_current(compliance_voltage=self.sense_comp)
+        self.meter.apply_current(compliance_voltage=self.source_comp)
         self.meter.enable_source()
         time.sleep(0.5)
         
@@ -106,6 +106,7 @@ class BaseHtProcedure(MagnetProcedure):
         self.meter.shutdown()
         log.info("Instruments shutdown.")
         
-        send_telegram_alert(
-            f"Finished Ht measurement for {self.chip_name}!"
-        )
+        if not self.should_stop():
+            send_telegram_alert(
+                f"Finished measurement for {self.chip_name}!"
+            )
